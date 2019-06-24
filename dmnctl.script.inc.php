@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/elbereth/Pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -55,7 +55,7 @@ function dmn_getcountry($mnip,&$countrycode) {
 function dmn_getip($pid,$uname) {
 
   $res = false;
-  exec('netstat -ntpl | grep "tcp  " | egrep ":([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])" | grep "'.$pid.'/darkcoind\|'.$pid.'/dashd"',$output,$retval);
+  exec('netstat -ntpl | grep "tcp  " | egrep ":([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])" | grep "'.$pid.'/paccoind\|'.$pid.'/paccoind"',$output,$retval);
   if (isset($output[0])) {
     if (preg_match("/tcp        0      0 (\d*\.\d*.\d*.\d*:\d*)/", $output[0], $output_array) == 1) {
       $res = $output_array[1];
@@ -113,7 +113,7 @@ function dmn_getpids($nodes,$isstatus = false,$istestnet) {
                     'type' => $node['NodeType'],
                     'enabled' => ($node['NodeEnabled'] == 1),
                     'testnet' => ($node['NodeTestNet'] == 1),
-                    'dashd' => $node['VersionPath'],
+                    'paccoind' => $node['VersionPath'],
                     'currentbin' => '',
                     'keeprunning' => ($node['KeepRunning'] == 1),
                     'keepuptodate' => ($node['KeepUpToDate'] == 1),
@@ -398,13 +398,13 @@ function dmn_help($exename) {
   echo "restart        Restarts nodes                   option1 = testnet|mainnet, option2 = all|masternode|p2pool\n";
   echo "stop           Stop nodes                       option1 = testnet|mainnet, option2 = all|masternode|p2pool\n";
   echo "\n";
-  echo "version        Create a new dashd version       option1 = binary path\n";
+  echo "version        Create a new paccoind version       option1 = binary path\n";
   echo "                                                option2 = display string\n";
   echo "                                                option3 = testnet only (1 or 0)\n";
   echo "                                                option4 = enabled (1 or 0)\n";
 }
 
-// Create a new dashd version in the database usable by nodes
+// Create a new paccoind version in the database usable by nodes
 function dmn_version_create($versionpath, $versiondisplay, $testnet, $enabled) {
 
   xecho("Retrieving raw version number from binary: ");
@@ -482,7 +482,7 @@ function dmn_version_create($versionpath, $versiondisplay, $testnet, $enabled) {
 
 }
 
-// Create a new Dash Masternode user, prepare folder and configuration
+// Create a new Pac Masternode user, prepare folder and configuration
 function dmn_create($dmnpid,$ip,$forcename = '') {
 
   if ($forcename == '') {
@@ -501,7 +501,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
     $testinfo = '';
   }
   echo "Creating $newuname: ";
-  exec('useradd -m -c "Dash$testinfo MasterNode #'.$newnum.'" -U -s /bin/false -p '.randomPassword(128).' '.$newuname.' 1>/dev/null 2>/dev/null',$output,$retval);
+  exec('useradd -m -c "Pac$testinfo MasterNode #'.$newnum.'" -U -s /bin/false -p '.randomPassword(128).' '.$newuname.' 1>/dev/null 2>/dev/null',$output,$retval);
   if ($retval != 0) {
     echo "Already exists!\n";
     if ($forcename == '') {
@@ -511,18 +511,18 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   else {
     echo "retval=$retval\n";
   }
-  echo "Generating dash.conf";
-  mkdir("/home/$newuname/.dashcore");
-  touch("/home/$newuname/.dashcore/dash.conf");
-  chmod("/home/$newuname/.dashcore",0700);
-  chmod("/home/$newuname/.dashcore/dash.conf",0600);
+  echo "Generating Pac.conf";
+  mkdir("/home/$newuname/.paccoincore");
+  touch("/home/$newuname/.paccoincore/Pac.conf");
+  chmod("/home/$newuname/.paccoincore",0700);
+  chmod("/home/$newuname/.paccoincore/Pac.conf",0600);
   $conflist = array('server=1',
          'rpcuser='.$newuname.'rpc',
          'rpcpassword='.randomPassword(128),
-         'alertnotify=echo %s | mail -s "Dash MasterNode #'.str_pad($newnum,2,'0',STR_PAD_LEFT).' Alert" somebody@mowhere.blackhole',
+         'alertnotify=echo %s | mail -s "Pac MasterNode #'.str_pad($newnum,2,'0',STR_PAD_LEFT).' Alert" somebody@mowhere.blackhole',
          'rpcallowip=127.0.0.1',
          "bind=$ip",
-         'rpcport='.(intval($newnum)+DMNCTLRPCPORTVAL).'998',
+         'rpcport='.(intval($newnum)+DMNCTLRPCPORTVAL).'7112',
          'masternode=0',
          "externalip=$ip",
          '#mnctlcfg#enable=1');
@@ -530,8 +530,8 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
     $conflist[] = 'testnet=1';
   }
 
-  $dashconf = implode("\n",$conflist);
-  file_put_contents("/home/$newuname/.dashcore/dash.conf",$dashconf);
+  $Pacconf = implode("\n",$conflist);
+  file_put_contents("/home/$newuname/.paccoincore/Pac.conf",$dashconf);
   echo "OK\n";
   echo "Setting ACL";
   if (file_exists("/home/$newuname/.bash_history")) {
@@ -541,10 +541,10 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   chmod("/home/$newuname/.profile",0600);
   chmod("/home/$newuname/.bash_logout",0600);
   chmod("/home/$newuname/",0700);
-  chown("/home/$newuname/.dashcore/",$newuname);
-  chgrp("/home/$newuname/.dashcore/",$newuname);
-  chown("/home/$newuname/.dashcore/dash.conf",$newuname);
-  chgrp("/home/$newuname/.dashcore/dash.conf",$newuname);
+  chown("/home/$newuname/.paccoincore/",$newuname);
+  chgrp("/home/$newuname/.paccoincore/",$newuname);
+  chown("/home/$newuname/.paccoincore/paccoin.conf",$newuname);
+  chgrp("/home/$newuname/.paccoincore/oaccoin.conf",$newuname);
   echo "OK\n";
   echo "Add to /etc/network/interfaces\n";
   echo "        post-up /sbin/ifconfig eth0:$newnum $ip netmask 255.255.255.255 broadcast $ip\n";
@@ -552,7 +552,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
 
 }
 
-// Set the enable flag to 0 in dash.conf to disable the Masternode
+// Set the enable flag to 0 in Pac.conf to disable the Masternode
 function dmn_disable($dmnpid,$dmntodisable) {
   foreach ($dmntodisable as $uname) {
     echo "Disabling $uname: ";
@@ -572,7 +572,7 @@ function dmn_disable($dmnpid,$dmntodisable) {
       }
     }
     else {
-      echo "Unknown Dash MasterNode";
+      echo "Unknown Pac MasterNode";
     }
     echo "\n";
   }
@@ -598,7 +598,7 @@ function dmn_enable($dmnpid,$dmntoenable) {
       }
     }
     else {
-      echo "Unknown Dash MasterNode";
+      echo "Unknown Pac MasterNode";
     }
     echo "\n";
   }
@@ -645,7 +645,7 @@ function dmn_startstop($dmnpid,$todo,$testnet = false,$nodetype = 'masternode',$
     $uname = $node['uname'];
     $commands[] = array("status" => 0,
                         "nodenum" => $nodenum,
-                        "cmd" => "$uname $todo ".$node['dashd'].$extra,
+                        "cmd" => "$uname $todo ".$node['paccoind'].$extra,
                         "exitcode" => -1,
                         "output" => '');
   }
@@ -675,7 +675,7 @@ function dmn_startkeeprunning($dmnpid) {
     $uname = $node['uname'];
     $commands[] = array("status" => 0,
         "nodenum" => $nodenum,
-        "cmd" => "$uname start ".$node['dashd'],
+        "cmd" => "$uname start ".$node['paccoind'],
         "exitcode" => -1,
         "output" => '');
   }
@@ -715,13 +715,13 @@ function dmn_restartfrozen($dmnpid) {
       unlink("/tmp/dmnctl-NR-$uname-counter",$counter);
       $commands[] = array("status" => 0,
           "nodenum" => $nodenum,
-          "cmd" => "$uname stop " . $node['dashd'],
+          "cmd" => "$uname stop " . $node['paccoind'],
           "exitcode" => -1,
           "output" => '');
       if ($node["keeprunning"]) {
         $commands2[] = array("status" => 0,
             "nodenum" => $nodenum,
-            "cmd" => "$uname start " . $node['dashd'],
+            "cmd" => "$uname start " . $node['paccoind'],
             "exitcode" => -1,
             "output" => '');
         xechoToFile(DMN_NRCOUNTLOG,"Restarting unresponsive ".$uname);
@@ -787,7 +787,7 @@ function dmn_status($dmnpid,$istestnet) {
   // First check the pid and getinfo for all nodes
   foreach($dmnpid as $dmnnum => $dmnpidinfo) {
     $uname = $dmnpidinfo['uname'];
-    $dmnpid[$dmnnum]['pidstatus'] = dmn_checkpid($dmnpidinfo['pid']);
+    $dmnpid[$dmnnum]['pidstatus'] = TRUE;
     if (($dmnpid[$dmnnum]['pidstatus']) && ($dmnpidinfo['currentbin'] != '')) {
       $commands[] = array("status" => 0,
                           "dmnnum" => $dmnnum,
@@ -1178,10 +1178,10 @@ function dmn_status($dmnpid,$istestnet) {
 
     // Get default port
     if ($dmnpidinfo['conf']->getconfig('testnet') == '1') {
-      $port = 19999;
+      $port = 7112;
     }
     else {
-      $port = 9999;
+      $port = 7112;
     }
 
     // Default values
@@ -2170,7 +2170,7 @@ if ($argc > 1) {
       echo "Success (".count($nodes)." nodes)\n";
     }
     elseif (($response['http_code'] >= 400) && ($response['http_code'] <= 499)) {
-      echo "Error (".$response['http_code'].": ".$content['message'].")\n";
+      echo "Error (".$response['http_code']." : ".$content['message'].")";
     }
   }
   else {

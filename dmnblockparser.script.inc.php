@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/elbereth/Pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -454,13 +454,10 @@ function dmn_blockparse($uname, $testnet, $mnpubkeys, $mndonations, $poolpubkeys
       $minprotocol = 0;
       $maxprotocol = 9999999999;
       if ($block["version"] == 536870914) {
-        $minprotocol = 70208;
-      }
-      else if ($block["version"] == 536870912) {
-        $minprotocol = 70206;
+        $minprotocol = 70201;
       }
       else if ($block["version"] == 3) {
-          $maxprotocol = 70103;
+          $maxprotocol = 70215;
       }
       if (($block !== false) && isset($block) && array_key_exists('height',$block)) {
         if ($block['height'] == $blockid) {
@@ -646,7 +643,7 @@ function dmn_blockparse($uname, $testnet, $mnpubkeys, $mndonations, $poolpubkeys
                         "MemPoolDarkSendTXCount" => 0,
                         "BlockVersion" => $block['version']
                         );
-                    echo "$mnpayee ($mnpaid DASH) - ";
+                    echo "$mnpayee ($mnpaid Pac) - ";
                   }
                   else {
                     $protocol = 0;

@@ -40,11 +40,11 @@ fi
 
 # Sequentially run scripts
 #/opt/dmnctl/dashdupdate >> $updatelog
-/opt/dmnctl/dmnctl status >> $statuslog
+/opt/pacninja-ctl/dmnctl status >> $statuslog
 #/opt/dmnctl/dmnvotesrrd >> $votesrrdlog
-/opt/dmnctl/dmnblockparser >> $blockparserlog
+/opt/pacninja-ctl/dmnblockparser >> $blockparserlog
 
 # Concurrently run scripts
-/opt/dmnctl/dmnbalance >> $balancelog &
-/opt/dmnctl/dmnportcheck db >> $portchecklog &
-/opt/dmnctl/dmnautoupdate >> $autoupdatelog &
+/opt/pacninja-ctl/dmnbalance >> $balancelog &
+/opt/pacninja-ctl/dmnportcheck db >> $portchecklog &
+/opt/pacninja-ctl/dmnautoupdate >> $autoupdatelog &

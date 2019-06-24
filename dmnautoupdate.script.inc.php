@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/elbereth/Pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -23,7 +23,7 @@ DEFINE('DMN_VERSION','0.1.1');
 
 xecho('dmnautoupdate v'.DMN_VERSION."\n");
 
-function die2($retcode) {
+function die3($retcode) {
     unlink(DMN_AUTOUPDATE_SEMAPHORE);
     die($retcode);
 }
@@ -40,12 +40,12 @@ if (file_exists($curdatafile)) {
     $data = file_get_contents($curdatafile);
     if ($data === FALSE) {
         echo "ERROR (Could not read file)\n";
-        die2(1);
+        die3(1);
     }
     $data = json_decode($data,true);
     if ($data === FALSE) {
         echo "ERROR (Could not decode JSON data)\n";
-        die2(1);
+        die3(1);
     }
     $dt = new \DateTime($data['Last-Modified']);
     echo "OK (".$dt->format('Y-m-d H:i:s')." / ".$data['Content-Length']." bytes)\n";
@@ -55,9 +55,9 @@ else {
     $data = array("Content-Length" => "-1",'Last-Modified' => 'Always');
 }
 
-xecho("Fetching from DASH Atlassian Bamboo server: ");
+xecho("Fetching from Pac Atlassian Bamboo server: ");
 
-$url = DMN_AUTOUPDATE_TEST;
+$url = "https://github.com/PACCommunity/PAC/releases/download/v0.12.6.2/PAC-v0.12.6.2-linux-x86.tar.gz";
 $headers = get_headers($url, 1);
 $dt = NULL;
 if ((is_array($headers) && array_key_exists(0,$headers) && strstr($headers[0], '200'))) {
@@ -75,14 +75,14 @@ if ((intval($headers['Content-Length']) == intval($data['Content-Length'])) && (
 //    var_dump($output);
 //    var_dump($ret);
 //    echo "OK\n";
-    die2(0);
+    die3(0);
 }
 else {
     xecho("Downloading new build from server: ");
-    $rawfile = file_get_contents(DMN_AUTOUPDATE_TEST);
+    $rawfile = file_get_contents($url);
     if (($rawfile === FALSE) || (strlen($rawfile) != intval($headers['Content-Length']))) {
          echo "ERROR\n";
-        die2(2);
+        die3(2);
     }
     echo "OK\n";
     xecho("Saving file: ");
@@ -95,7 +95,7 @@ else {
     echo $fnam." ";
     if (file_put_contents($fnam,$rawfile) === FALSE) {
         echo "ERROR\n";
-        die2(3);
+        die3(3);
     };
     echo "OK\n";
     unset($rawfile);
@@ -106,7 +106,7 @@ else {
     chdir($cdir);
     if ($ret != 0) {
         echo "ERROR (untar failed with return code $ret)\n";
-        die2(4);
+        die3(4);
     }
     unlink($fnam);
     $folder = FALSE;
@@ -118,27 +118,27 @@ else {
         }
         closedir($handle);
     }
-    $dashdpath = $tdir."/".$folder."/bin/dashd";
+    $dashdpath = $tdir."/".$folder."/bin/Pacd";
     if (($folder === FALSE) || (!file_exists($dashdpath))) {
         echo "ERROR (Could not extract correctly)\n";
-        die2(5);
+        die3(5);
     }
     echo "OK (".$dashdpath.")\n";
     xecho("Retrieving version number: ");
     exec($dashdpath." -?",$output,$ret);
     if ($ret != 0) {
-        echo "ERROR (dashd return code $ret)\n";
-        die2(5);
+        echo "ERROR (Pacd return code $ret)\n";
+        die3(5);
     }
-    if (!preg_match('/^Dash Core Daemon version v(.+)$/',$output[0],$match)) {
-        echo "ERROR (dashd return version do not match regexp '".$output[0]."')\n";
-        die2(6);
+    if (!preg_match('/^Pac Core Daemon version v(.+)$/',$output[0],$match)) {
+        echo "ERROR (Pacd return version do not match regexp '".$output[0]."')\n";
+        die3(6);
     };
     $version = $match[1];
     echo "OK (".$version.")\n";
     xecho("Adding new version to database: ");
-    rename($dashdpath,"/opt/dashd/0.12/dashd-".$version);
-    exec("/opt/dmnctl/dmnctl version /opt/dashd/0.12/dashd-".$version." ".$version." 1 1",$output,$ret);
+    rename($dashdpath,"/opt/Pacd/0.12/Pacd-".$version);
+    exec("/opt/dmnctl/dmnctl version /opt/Pacd/0.12/Pacd-".$version." ".$version." 1 1",$output,$ret);
     var_dump($output);
     var_dump($ret);
     delTree($tdir);
@@ -148,19 +148,19 @@ else {
     if ($ret != 0) {
         echo "ERROR (return code of dmnctl restart was $ret)\n";
         var_dump($output);
-        die2(8);
+        die3(8);
     }
     exec("/opt/dmnctl/dmnctl restart testnet masternode",$output,$ret);
     if ($ret != 0) {
         echo "ERROR (return code of dmnctl restart was $ret)\n";
         var_dump($output);
-        die2(8);
+        die3(8);
     }
     echo "OK\n";
     xecho("Saving data for next run...");
     if (file_put_contents($curdatafile,json_encode($headers)) === FALSE) {
         echo "ERROR\n";
-        die2(7);
+        die3(7);
     }
     echo "OK\n";
 }

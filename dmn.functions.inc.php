@@ -26,13 +26,13 @@ function xecho($line) {
   echo "\033[0;37m".date('Y-m-d H:i:s')."\033[1;30m - \e[1;37m".$line."\033[0m";
 }
 
-// Check if PID is running and is dashd
+// Check if PID is running and is paccoind
 function dmn_checkpid($pid) {
   if ($pid !== false) {
     $output = array();
     exec('ps -o comm -p '.$pid,$output,$retval);
     if (($retval == 0) && (is_array($output)) && (count($output)>=2)) {
-      return (((strlen($output[1]) >= 5) && (substr($output[1], 0, 5) == 'dashd')) || ((strlen($output[1]) >= 9) && (substr($output[1], 0, 9) == 'darkcoind')));
+      return ((strlen($output[1]) >= 8) && (substr($output[1], 0, 8) == 'paccoind'));
     }
     else {
       return false;
@@ -53,20 +53,20 @@ function dmn_getpid($uname,$testnet = false) {
   else {
     $testinfo = '';
   }
-  if (file_exists(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.darkcoin$testinfo/darkcoind.pid"));
+  if (file_exists("/root/.darkcoin$testinfo/darkcoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.darkcoin$testinfo/darkcoind.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dashcore$testinfo/dashd.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dashcore$testinfo/dashd.pid"));
+  else if (file_exists("/root/.dashcore$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.dashcore$testinfo/paccoind.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dashcore$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dashcore$testinfo/dash.pid"));
+  else if (file_exists("/root/.dashcore$testinfo/dash.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.dashcore$testinfo/dash.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dash$testinfo/dashd.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dash$testinfo/dashd.pid"));
+  else if (file_exists("/root/.dash$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.dash$testinfo/paccoind.pid"));
   }
-  else if (file_exists(DMN_PID_PATH.$uname."/.dash$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents(DMN_PID_PATH.$uname."/.dash$testinfo/dash.pid"));
+  else if (file_exists("/root/.dash$testinfo/dash.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.dash$testinfo/dash.pid"));
   }
   else {
     $res = false;
@@ -136,11 +136,11 @@ function dmn_cmd_get($command,$payload = array(),&$response) {
 
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+/*  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
   curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
   curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
   curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
-  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
+  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );*/
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
   curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
@@ -175,11 +175,11 @@ function dmn_cmd_post($command,$payload,&$response) {
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
   curl_setopt( $ch, CURLOPT_URL, DMN_URL_CMD.$command );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+/*  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
   curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
   curl_setopt( $ch, CURLOPT_SSLCERT, DMN_SSL_CERT);
   curl_setopt( $ch, CURLOPT_SSLKEY, DMN_SSL_KEY);
-  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );
+  curl_setopt( $ch, CURLOPT_CAINFO, DMN_SSL_CAINFO );*/
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
   curl_setopt( $ch, CURLOPT_INTERFACE, DMN_INTERFACE );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
@@ -204,18 +204,18 @@ function dmn_cmd_post($command,$payload,&$response) {
 
 }
 
-// Get dashd version from binary
+// Get paccoind version from binary
 function dmn_dashdversion($dpath) {
 
   if (file_exists($dpath) || is_link($dpath)) {
     exec($dpath.' -?',$output,$retval);
-    if (preg_match("/DarkCoin version v(.*)/", $output[0], $output_array) == 1) {
+    if (preg_match("/Paccoin version v(.*)/", $output[0], $output_array) == 1) {
       return $output_array[1];
     }
-    else if (preg_match("/Darkcoin Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
+    else if (preg_match("/Paccoin Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
       return $output_array[1];
     }
-    else if (preg_match("/Dash Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
+    else if (preg_match("/Paccoin Core Daemon version v(.*)/", $output[0], $output_array) == 1) {
       return $output_array[1];
     }
     else {

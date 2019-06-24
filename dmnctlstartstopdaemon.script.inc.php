@@ -87,13 +87,13 @@ function dmn_stop($uname,$conf) {
     $testinfo = '';
   }
 
-  $rpc = new \elbereth\EasyDash($conf->getconfig('rpcuser'),$conf->getconfig('rpcpassword'),'localhost',$conf->getconfig('rpcport'));
+  $rpc = new \EasyDash($conf->getconfig('rpcuser'),$conf->getconfig('rpcpassword'),'localhost',$conf->getconfig('rpcport'));
 
   $pid = dmn_getpid($uname,$testnet);
 
   if ($pid !== false) {
     $tmp = $rpc->stop();
-    if (($rpc->response['result'] != "DarkCoin server stopping") && ($rpc->response['result'] != "Dash server stopping") && ($rpc->response['result'] != "Dash Core server stopping")) {
+    if (($rpc->response['result'] != "PacCoin server stopping") && ($rpc->response['result'] != "Paccoin server stopping") && ($rpc->response['result'] != "Paccoin Core server stopping")) {
       echo "Unexpected daemon answer (".$rpc->response['result'].") ";
     }
     usleep(250000);
@@ -161,7 +161,7 @@ else {
 }
 
 if (!is_dir(DMN_PID_PATH.$uname)) {
-  xecho("This node don't exist: ".DMN_PID_PATH.$uname."\n");
+  xecho("This node don't exist: "."/root\n");
   die(2);
 }
 

@@ -87,7 +87,7 @@ EOT;
 
 
 
-xecho("\033[1;31mDASH Ninja \033[0;31mControl \033[1;33mDatabase Generator \033[0;37mv\033[1;32m".DMN_VERSION."\n");
+xecho("\033[1;31mPAC Ninja \033[0;31mControl \033[1;33mDatabase Generator \033[0;37mv\033[1;32m".DMN_VERSION."\n");
 
 if ($argc != 2) {
     xecho("Usage: ".$argv[0]." <command>\n");

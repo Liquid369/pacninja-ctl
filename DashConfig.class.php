@@ -69,14 +69,14 @@ class DashConfig {
 
   function __construct($uname) {
 
-    if (file_exists('/home/'.$uname.'/.dashcore/dash.conf')) {
-      $this->configfilename = '/home/'.$uname.'/.dashcore/dash.conf';
+    if (file_exists('/root/.paccoincore/paccoin.conf')) {
+      $this->configfilename = '/root/.paccoincore/paccoin.conf';
     }
-    elseif (file_exists('/home/'.$uname.'/.dash/dash.conf')) {
-      $this->configfilename = '/home/'.$uname.'/.dash/dash.conf';
+    elseif (file_exists('/root/.paccoin/paccoin.conf')) {
+      $this->configfilename = '/root/.paccoin/paccoin.conf';
     }
     else {
-      $this->configfilename = '/home/'.$uname.'/.darkcoin/darkcoin.conf';
+      $this->configfilename = '/root/.paccoin/paccoin.conf';
     }
     $this->loadconfig();
 

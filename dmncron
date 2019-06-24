@@ -37,18 +37,18 @@ fi
 
 # Sequentially run scripts
 #/opt/dmnctl/dashdupdate >> $updatelog
-/usr/bin/timeout 10m /opt/dmnctl/dmnctl status >> $statuslog
+/usr/bin/timeout 10m /opt/pacninja-ctl/dmnctl status >> $statuslog
 #/opt/dmnctl/dmnvotesrrd >> $votesrrdlog
-/usr/bin/php /opt/dmnctl/dmndbgen masternodeactive >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main nodesstatus >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main blocksconsensus >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main votelimit >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main masternodeslistfull >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main protxfull >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main governanceproposals >> $statuslog
-/usr/bin/php /home/dash-mnwww/www/main/api/cron.php main governancetriggers >> $statuslog
+/usr/bin/php /opt/pacninja-ctl/dmndbgen masternodeactive >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main nodesstatus >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main blocksconsensus >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main votelimit >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main masternodeslistfull >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main protxfull >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main governanceproposals >> $statuslog
+/usr/bin/php /var/www/html/api/cron.php main governancetriggers >> $statuslog
 
 # Concurrently run scripts
-/usr/bin/nice -n 18 /opt/dmnctl/dmnbalance >> $balancelog &
-/usr/bin/nice -n 19 /opt/dmnctl/dmnportcheck db >> $portchecklog &
-/usr/bin/nice -n 15 /opt/dmnctl/dmnautoupdate >> $autoupdatelog &
+/usr/bin/nice -n 18 /opt/pacninja-ctl/dmnbalance >> $balancelog &
+/usr/bin/nice -n 19 /opt/pacninja-ctl/dmnportcheck db >> $portchecklog &
+/usr/bin/nice -n 15 /opt/pacninja-ctl/dmnautoupdate >> $autoupdatelog &
