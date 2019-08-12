@@ -162,7 +162,7 @@ function dmn_getpids($nodes,$isstatus = false,$istestnet) {
 
 }
 
-function dmn_getstatus($dashdinfo,$blockhash) {
+function dmn_getstatus($pacdinfo,$blockhash) {
 
   $res = array('version' => false,
                'protocol' => false,
@@ -173,27 +173,27 @@ function dmn_getstatus($dashdinfo,$blockhash) {
                'blockhash' => $blockhash,
                'testnet' => 0);
 
-  if ($dashdinfo !== false) {
-    if (array_key_exists('version',$dashdinfo)) {
-      $res['version'] = $dashdinfo['version'];
+  if ($pacdinfo !== false) {
+    if (array_key_exists('version',$pacdinfo)) {
+      $res['version'] = $pacdinfo['version'];
     }
-    if (array_key_exists('protocolversion',$dashdinfo)) {
-      $res['protocol'] = $dashdinfo['protocolversion'];
+    if (array_key_exists('protocolversion',$pacdinfo)) {
+      $res['protocol'] = $pacdinfo['protocolversion'];
     }
-    if (array_key_exists('difficulty',$dashdinfo)) {
-      $res['difficulty'] = $dashdinfo['difficulty'];
+    if (array_key_exists('difficulty',$pacdinfo)) {
+      $res['difficulty'] = $pacdinfo['difficulty'];
     }
-    if (array_key_exists('blocks',$dashdinfo)) {
-      $res['blocks'] = $dashdinfo['blocks'];
+    if (array_key_exists('blocks',$pacdinfo)) {
+      $res['blocks'] = $pacdinfo['blocks'];
     }
-    if (array_key_exists('connections',$dashdinfo)) {
-      $res['connections'] = $dashdinfo['connections'];
+    if (array_key_exists('connections',$pacdinfo)) {
+      $res['connections'] = $pacdinfo['connections'];
     }
-    if (array_key_exists('testnet',$dashdinfo)
-     && $dashdinfo['testnet']) {
+    if (array_key_exists('testnet',$pacdinfo)
+     && $pacdinfo['testnet']) {
       $res['testnet'] = 1;
     }
-    $res['encryptedwallet'] = array_key_exists('unlocked_until',$dashdinfo);
+    $res['encryptedwallet'] = array_key_exists('unlocked_until',$pacdinfo);
   }
   return $res;
 
@@ -408,7 +408,7 @@ function dmn_help($exename) {
 function dmn_version_create($versionpath, $versiondisplay, $testnet, $enabled) {
 
   xecho("Retrieving raw version number from binary: ");
-  $versionraw = dmn_dashdversion($versionpath);
+  $versionraw = dmn_pacdversion($versionpath);
   if ($versionraw !== false) {
     echo "OK ($versionraw)\n";
     chmod($versionpath,0755);
@@ -544,7 +544,7 @@ function dmn_create($dmnpid,$ip,$forcename = '') {
   chown("/home/$newuname/.paccoincore/",$newuname);
   chgrp("/home/$newuname/.paccoincore/",$newuname);
   chown("/home/$newuname/.paccoincore/paccoin.conf",$newuname);
-  chgrp("/home/$newuname/.paccoincore/oaccoin.conf",$newuname);
+  chgrp("/home/$newuname/.paccoincore/paccoin.conf",$newuname);
   echo "OK\n";
   echo "Add to /etc/network/interfaces\n";
   echo "        post-up /sbin/ifconfig eth0:$newnum $ip netmask 255.255.255.255 broadcast $ip\n";
@@ -1210,13 +1210,13 @@ function dmn_status($dmnpid,$istestnet) {
       }
 
       // Parse status
-      $dashdinfo = dmn_getstatus($dmnpidinfo['info'],$dmnpidinfo['blockhash']);
-      $blocks = $dashdinfo['blocks'];
-      $blockhash = $dashdinfo['blockhash'];
-      $connections = $dashdinfo['connections'];
-      $difficulty = $dashdinfo['difficulty'];
-      $protocol = $dashdinfo['protocol'];
-      $version = $dashdinfo['version'];
+      $pacdinfo = dmn_getstatus($dmnpidinfo['info'],$dmnpidinfo['blockhash']);
+      $blocks = $pacdinfo['blocks'];
+      $blockhash = $pacdinfo['blockhash'];
+      $connections = $pacdinfo['connections'];
+      $difficulty = $pacdinfo['difficulty'];
+      $protocol = $pacdinfo['protocol'];
+      $version = $pacdinfo['version'];
 
       // Protocol
       //  Current protocol is the max protocol
@@ -1276,12 +1276,12 @@ function dmn_status($dmnpid,$istestnet) {
           $mnpose = $dmnpidinfo['mnpose'];
           $mnlist = $dmnpidinfo['mnlist'];
           $mncurrentip = $dmnpidinfo['mncurrent'];
-          $mncurrentlist[$uname] = $mncurrentip.":".$dashdinfo['testnet'];
+          $mncurrentlist[$uname] = $mncurrentip.":".$pacdinfo['testnet'];
           foreach($dmnpidinfo['mnlastseen'] as $mnlsip => $data) {
-            $mnlastseen[$uname][$mnlsip.':'.$dashdinfo['testnet']] = $data;
+            $mnlastseen[$uname][$mnlsip.':'.$pacdinfo['testnet']] = $data;
           }
           foreach($dmnpidinfo['mnactiveseconds'] as $mnlsip => $data) {
-            $mnactivesince[$uname][$mnlsip.':'.$dashdinfo['testnet']] = $data;
+            $mnactivesince[$uname][$mnlsip.':'.$pacdinfo['testnet']] = $data;
           }
           $mndonationlist = $dmnpidinfo['mndonation'];
           $mnvoteslist = $dmnpidinfo['mnvotes'];
@@ -1302,29 +1302,29 @@ function dmn_status($dmnpid,$istestnet) {
             else {
               $active = $activetrue;
             }
-            $mnlistfinal["$ip:".$dashdinfo['testnet']][$uname] = array('Status' => $active,
+            $mnlistfinal["$ip:".$pacdinfo['testnet']][$uname] = array('Status' => $active,
                                                                            'PoS' => $mnpose[$ip],
                                                                            'StatusEx' => $activetrue);
           }
           if (is_array($mnvoteslist) && (count($mnvoteslist)>0)) {
             foreach($mnvoteslist as $ip => $vote) {
-              $mnvoteslistfinal["$ip:".$dashdinfo['testnet']][$uname] = $vote;
+              $mnvoteslistfinal["$ip:".$pacdinfo['testnet']][$uname] = $vote;
             }
           }
           foreach($mnpubkeylist as $data) {
-            $mnpubkeylistfinal[$data["ip"].":".$data["port"].":".$dashdinfo['testnet'].":".$data["pubkey"]] = array(
+            $mnpubkeylistfinal[$data["ip"].":".$data["port"].":".$pacdinfo['testnet'].":".$data["pubkey"]] = array(
                      "MasternodeIP" => $data["ip"],
                      "MasternodePort" => $data["port"],
-                     "MNTestNet" => $dashdinfo['testnet'],
+                     "MNTestNet" => $pacdinfo['testnet'],
                      "MNPubKey" => $data["pubkey"]
                 );
           }
           if (is_array($mndonationlist)) {
             foreach($mndonationlist as $donatedata) {
-              $mndonationlistfinal[$donatedata["ip"].":".$donatedata["port"].":".$dashdinfo['testnet'].":".$donatedata["pubkey"]] = array(
+              $mndonationlistfinal[$donatedata["ip"].":".$donatedata["port"].":".$pacdinfo['testnet'].":".$donatedata["pubkey"]] = array(
                      "MasternodeIP" => $donatedata["ip"],
                      "MasternodePort" => $donatedata["port"],
-                     "MNTestNet" => $dashdinfo['testnet'],
+                     "MNTestNet" => $pacdinfo['testnet'],
                      "MNPubKey" => $donatedata["pubkey"],
                      "MNDonationPercentage" => $donatedata["percent"]
                 );
@@ -1339,32 +1339,32 @@ function dmn_status($dmnpid,$istestnet) {
               // Parse masternode budgets proposals
               if (is_array($dmnpidinfo['mnbudgetshow'])) {
                   foreach ($dmnpidinfo['mnbudgetshow'] as $mnbudgetid => $mnbudgetdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetshow)) {
-                          if (($mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Yeas"]
-                                  + $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Nays"]
-                                  + $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
+                      if (array_key_exists($pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetshow)) {
+                          if (($mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Yeas"]
+                                  + $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Nays"]
+                                  + $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
                           ) {
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                              $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                              $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                              $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                           }
                       } else {
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                          $mnbudgetshow[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                          $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                          $mnbudgetshow[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                       }
                       if (array_key_exists("mnbudget-getvotes-" . $mnbudgetid, $dmnpidinfo)) {
-                          if (!array_key_exists($mnbudgetid, $mnbudgetvotes[$dashdinfo['testnet']])) {
-                              $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid] = array();
+                          if (!array_key_exists($mnbudgetid, $mnbudgetvotes[$pacdinfo['testnet']])) {
+                              $mnbudgetvotes[$pacdinfo['testnet']][$mnbudgetid] = array();
                           }
                           if (is_array($dmnpidinfo["mnbudget-getvotes-" . $mnbudgetid])) {
                               foreach ($dmnpidinfo["mnbudget-getvotes-" . $mnbudgetid] as $mnbudgetvotehash => $mnbudgetvotedata) {
-                                  if (array_key_exists($mnbudgetvotehash, $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid])) {
-                                      if ($mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash]["nTime"] < $mnbudgetvotedata["nTime"]) {
-                                          $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
+                                  if (array_key_exists($mnbudgetvotehash, $mnbudgetvotes[$pacdinfo['testnet']][$mnbudgetid])) {
+                                      if ($mnbudgetvotes[$pacdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash]["nTime"] < $mnbudgetvotedata["nTime"]) {
+                                          $mnbudgetvotes[$pacdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
                                       }
                                   } else {
-                                      $mnbudgetvotes[$dashdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
+                                      $mnbudgetvotes[$pacdinfo['testnet']][$mnbudgetid][$mnbudgetvotehash] = $mnbudgetvotedata;
                                   }
                               }
                           }
@@ -1376,19 +1376,19 @@ function dmn_status($dmnpid,$istestnet) {
               if (is_array($dmnpidinfo['mnbudgetprojection'])) {
                   foreach ($dmnpidinfo['mnbudgetprojection'] as $mnbudgetid => $mnbudgetdata) {
                       if (is_array($mnbudgetdata) && array_key_exists("Yeas", $mnbudgetdata) && array_key_exists("Nays", $mnbudgetdata) && array_key_exists("Abstains", $mnbudgetdata)) {
-                          if (array_key_exists($mnbudgetdata["Hash"], $mnbudgetprojection[$dashdinfo['testnet']])) {
-                              if (($mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Yeas"]
-                                      + $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Nays"]
-                                      + $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
+                          if (array_key_exists($mnbudgetdata["Hash"], $mnbudgetprojection[$pacdinfo['testnet']])) {
+                              if (($mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]["Yeas"]
+                                      + $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]["Nays"]
+                                      + $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]["Abstains"]) < ($mnbudgetdata["Yeas"] + $mnbudgetdata["Nays"] + $mnbudgetdata["Abstains"])
                               ) {
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                                  $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                                  $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
+                                  $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                                  $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                               }
                           } else {
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
-                              $mnbudgetprojection[$dashdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                              $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]['BudgetId'] = $mnbudgetid;
+                              $mnbudgetprojection[$pacdinfo['testnet']][$mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                           }
                       }
                   }
@@ -1397,18 +1397,18 @@ function dmn_status($dmnpid,$istestnet) {
               // Parse masternode final budget
               if (is_array($dmnpidinfo['mnbudgetfinal'])) {
                   foreach ($dmnpidinfo['mnbudgetfinal'] as $mnbudgetid => $mnbudgetdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetfinal) &&
-                          array_key_exists("VoteCount", $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]])
+                      if (array_key_exists($pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"], $mnbudgetfinal) &&
+                          array_key_exists("VoteCount", $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]])
                       ) {
-                          if (($mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["VoteCount"]) < ($mnbudgetdata["VoteCount"])) {
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
-                              $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          if (($mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["VoteCount"]) < ($mnbudgetdata["VoteCount"])) {
+                              $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                              $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
+                              $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                           }
                       } else {
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
-                          $mnbudgetfinal[$dashdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $dashdinfo['testnet'];
+                          $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]] = $mnbudgetdata;
+                          $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]['BudgetName'] = $mnbudgetid;
+                          $mnbudgetfinal[$pacdinfo['testnet'] . "-" . $mnbudgetdata["Hash"]]["BudgetTesnet"] = $pacdinfo['testnet'];
                       }
                   }
               }
@@ -1417,31 +1417,31 @@ function dmn_status($dmnpid,$istestnet) {
           elseif (($dmnpidinfo['versionhandling'] >= 4) && ($dmnpidinfo['type'] != 'p2pool')) {
               $collateralregexp = "/([\dabcdef]{64})-(\d+)/";
               // Store the next superblock
-              if (($governancenextsb[$dashdinfo['testnet']] === false) || ($governancenextsb[$dashdinfo['testnet']] > intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']))) {
-                $governancenextsb[$dashdinfo['testnet']] = intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']);
+              if (($governancenextsb[$pacdinfo['testnet']] === false) || ($governancenextsb[$pacdinfo['testnet']] > intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']))) {
+                $governancenextsb[$pacdinfo['testnet']] = intval($dmnpidinfo['getgovernanceinfo']['nextsuperblock']);
               }
               // Store the budget available in next superblock
-              if (($governancebudget[$dashdinfo['testnet']] === false) || ($governancebudget[$dashdinfo['testnet']] > floatval($dmnpidinfo['getsuperblockbudget']))) {
-                $governancebudget[$dashdinfo['testnet']] = floatval($dmnpidinfo['getsuperblockbudget']);
+              if (($governancebudget[$pacdinfo['testnet']] === false) || ($governancebudget[$pacdinfo['testnet']] > floatval($dmnpidinfo['getsuperblockbudget']))) {
+                $governancebudget[$pacdinfo['testnet']] = floatval($dmnpidinfo['getsuperblockbudget']);
               }
               // Parse proposals
               if (is_array($dmnpidinfo["gobjectlist"]) && is_array($dmnpidinfo["gobjectlist"]["proposals"])) {
                   foreach ($dmnpidinfo["gobjectlist"]["proposals"] as $proposaldata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $proposaldata["hash"], $gobjectproposallist)) {
-                          if (($gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["YesCount"]
-                             + $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["NoCount"]
-                             + $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["AbstainCount"]) < ($proposaldata["gobject"]["YesCount"] + $proposaldata["gobject"]["NoCount"] + $proposaldata["gobject"]["AbstainCount"])
+                      if (array_key_exists($pacdinfo['testnet'] . "-" . $proposaldata["hash"], $gobjectproposallist)) {
+                          if (($gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["YesCount"]
+                             + $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["NoCount"]
+                             + $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]]["gobject"]["AbstainCount"]) < ($proposaldata["gobject"]["YesCount"] + $proposaldata["gobject"]["NoCount"] + $proposaldata["gobject"]["AbstainCount"])
                           ) {
-                              $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
-                              $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                              $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
+                              $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $pacdinfo['testnet'];
                           }
                       } else {
-                          $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
-                          $gobjectproposallist[$dashdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                          $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]] = $proposaldata;
+                          $gobjectproposallist[$pacdinfo['testnet'] . "-" . $proposaldata["hash"]]["Testnet"] = $pacdinfo['testnet'];
                       }
                       if (array_key_exists("gobject-getvotes-" . $proposaldata["hash"], $dmnpidinfo)) {
-                          if (!array_key_exists($proposaldata["hash"], $gobjectvotes[$dashdinfo['testnet']])) {
-                              $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]] = array();
+                          if (!array_key_exists($proposaldata["hash"], $gobjectvotes[$pacdinfo['testnet']])) {
+                              $gobjectvotes[$pacdinfo['testnet']][$proposaldata["hash"]] = array();
                           }
                           if (is_array($dmnpidinfo["gobject-getvotes-" . $proposaldata["hash"]])) {
                               foreach ($dmnpidinfo["gobject-getvotes-" . $proposaldata["hash"]] as $gobjectvotehash => $gobjectvotedata) {
@@ -1459,16 +1459,16 @@ function dmn_status($dmnpid,$istestnet) {
                                       $mnoutputhash = false;
                                   }
                                   if ($mnoutputhash !== false) {
-                                    if (array_key_exists($mnoutputhash . "-" . $mnoutputindex, $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]])) {
-                                      if ($gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex]["nTime"] < $ntime) {
-                                        $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                    if (array_key_exists($mnoutputhash . "-" . $mnoutputindex, $gobjectvotes[$pacdinfo['testnet']][$proposaldata["hash"]])) {
+                                      if ($gobjectvotes[$pacdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex]["nTime"] < $ntime) {
+                                        $gobjectvotes[$pacdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                           "MasternodeOutputIndex" => intval($mnoutputindex),
                                           "VoteHash" => $gobjectvotehash,
                                           "nTime" => intval($ntime),
                                           "Vote" => $vote);
                                       }
                                     } else {
-                                      $gobjectvotes[$dashdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                      $gobjectvotes[$pacdinfo['testnet']][$proposaldata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                         "MasternodeOutputIndex" => intval($mnoutputindex),
                                         "VoteHash" => $gobjectvotehash,
                                         "nTime" => intval($ntime),
@@ -1483,22 +1483,22 @@ function dmn_status($dmnpid,$istestnet) {
               }
               if (is_array($dmnpidinfo["gobjectlist"]) && is_array($dmnpidinfo["gobjectlist"]["triggers"])) {
                   foreach ($dmnpidinfo["gobjectlist"]["triggers"] as $triggerdata) {
-                      if (array_key_exists($dashdinfo['testnet'] . "-" . $triggerdata["hash"], $gobjecttriggerlist)) {
-                          if (($gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["YesCount"]
-                                  + $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["NoCount"]
-                                  + $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["AbstainCount"]) < ($triggerdata["gobject"]["YesCount"] + $triggerdata["gobject"]["NoCount"] + $triggerdata["gobject"]["AbstainCount"])
+                      if (array_key_exists($pacdinfo['testnet'] . "-" . $triggerdata["hash"], $gobjecttriggerlist)) {
+                          if (($gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["YesCount"]
+                                  + $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["NoCount"]
+                                  + $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]]["gobject"]["AbstainCount"]) < ($triggerdata["gobject"]["YesCount"] + $triggerdata["gobject"]["NoCount"] + $triggerdata["gobject"]["AbstainCount"])
                           ) {
-                              $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
-                              $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                              $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
+                              $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $pacdinfo['testnet'];
 
                           }
                       } else {
-                          $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
-                          $gobjecttriggerlist[$dashdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $dashdinfo['testnet'];
+                          $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]] = $triggerdata;
+                          $gobjecttriggerlist[$pacdinfo['testnet'] . "-" . $triggerdata["hash"]]["Testnet"] = $pacdinfo['testnet'];
                       }
                       if (array_key_exists("gobject-getvotes-" . $triggerdata["hash"], $dmnpidinfo)) {
-                          if (!array_key_exists($triggerdata["hash"], $gobjectvotes[$dashdinfo['testnet']])) {
-                              $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]] = array();
+                          if (!array_key_exists($triggerdata["hash"], $gobjectvotes[$pacdinfo['testnet']])) {
+                              $gobjectvotes[$pacdinfo['testnet']][$triggerdata["hash"]] = array();
                           }
                           if (is_array($dmnpidinfo["gobject-getvotes-" . $triggerdata["hash"]])) {
                               foreach ($dmnpidinfo["gobject-getvotes-" . $triggerdata["hash"]] as $gobjectvotehash => $gobjectvotedata) {
@@ -1516,16 +1516,16 @@ function dmn_status($dmnpid,$istestnet) {
                                         $mnoutputhash = false;
                                       }
                                       if ($mnoutputhash !== false) {
-                                      if (array_key_exists($mnoutputhash . "-" . $mnoutputindex, $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]])) {
-                                        if ($gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex]["nTime"] < $ntime) {
-                                          $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                      if (array_key_exists($mnoutputhash . "-" . $mnoutputindex, $gobjectvotes[$pacdinfo['testnet']][$triggerdata["hash"]])) {
+                                        if ($gobjectvotes[$pacdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex]["nTime"] < $ntime) {
+                                          $gobjectvotes[$pacdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                             "MasternodeOutputIndex" => intval($mnoutputindex),
                                             "VoteHash" => $gobjectvotehash,
                                             "nTime" => intval($ntime),
                                             "Vote" => $vote);
                                         }
                                       } else {
-                                        $gobjectvotes[$dashdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
+                                        $gobjectvotes[$pacdinfo['testnet']][$triggerdata["hash"]][$mnoutputhash . "-" . $mnoutputindex] = array("MasternodeOutputHash" => $mnoutputhash,
                                           "MasternodeOutputIndex" => intval($mnoutputindex),
                                           "VoteHash" => $gobjectvotehash,
                                           "nTime" => intval($ntime),
@@ -1545,13 +1545,13 @@ function dmn_status($dmnpid,$istestnet) {
           if ($dmnpidinfo['versionhandling'] == 6) {
             if (array_key_exists("protx-valid",$dmnpidinfo) && is_array($dmnpidinfo['protx-valid'])) {
               foreach ($dmnpidinfo['protx-valid'] as $protxhash => $protxdata) {
-                if (!array_key_exists($protxdata["proTxHash"], $protxglobal[$dashdinfo['testnet']])) {
-                  $protxglobal[$dashdinfo['testnet']][$protxdata["proTxHash"]] = $protxdata;
-                  $protxglobal[$dashdinfo['testnet']][$protxdata["proTxHash"]]["state"] = array();
-                  unset($protxglobal[$dashdinfo['testnet']][$protxdata["proTxHash"]]["wallet"]);
-                  unset($protxglobal[$dashdinfo['testnet']][$protxdata["proTxHash"]]["proTxHash"]);
+                if (!array_key_exists($protxdata["proTxHash"], $protxglobal[$pacdinfo['testnet']])) {
+                  $protxglobal[$pacdinfo['testnet']][$protxdata["proTxHash"]] = $protxdata;
+                  $protxglobal[$pacdinfo['testnet']][$protxdata["proTxHash"]]["state"] = array();
+                  unset($protxglobal[$pacdinfo['testnet']][$protxdata["proTxHash"]]["wallet"]);
+                  unset($protxglobal[$pacdinfo['testnet']][$protxdata["proTxHash"]]["proTxHash"]);
                 }
-                $protxglobal[$dashdinfo['testnet']][$protxdata["proTxHash"]]["state"][$uname] = $protxdata["state"];
+                $protxglobal[$pacdinfo['testnet']][$protxdata["proTxHash"]]["state"][$uname] = $protxdata["state"];
               }
             }
           }
@@ -1612,19 +1612,19 @@ function dmn_status($dmnpid,$istestnet) {
               list($mn3ip, $mn3port) = $test;
             }
 
-            if (array_key_exists($mn3output."-".$dashdinfo['testnet'],$mninfo2)) {
-              if ($mn3lastseen < $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastSeen"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastSeen"] = intval($mn3lastseen);
+            if (array_key_exists($mn3output."-".$pacdinfo['testnet'],$mninfo2)) {
+              if ($mn3lastseen < $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeLastSeen"]) {
+                $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeLastSeen"] = intval($mn3lastseen);
               }
-              if ($mn3activeseconds < $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeActiveSeconds"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeActiveSeconds"] = intval($mn3activeseconds);
+              if ($mn3activeseconds < $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeActiveSeconds"]) {
+                $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeActiveSeconds"] = intval($mn3activeseconds);
               }
-              if ($mn3lastpaid > $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastPaid"]) {
-                $mninfo2[$mn3output."-".$dashdinfo['testnet']]["MasternodeLastPaid"] = intval($mn3lastpaid);
+              if ($mn3lastpaid > $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeLastPaid"]) {
+                $mninfo2[$mn3output."-".$pacdinfo['testnet']]["MasternodeLastPaid"] = intval($mn3lastpaid);
               }
             }
             else {
-              $mninfo2[$mn3output."-".$dashdinfo['testnet']] = array("MasternodeProtocol" => intval($mn3protocol),
+              $mninfo2[$mn3output."-".$pacdinfo['testnet']] = array("MasternodeProtocol" => intval($mn3protocol),
                                                                          "MasternodePubkey" => $mn3pubkey,
                                                                          "MasternodeIP" => $mn3ip,
                                                                          "MasternodePort" => $mn3port,
@@ -1646,7 +1646,7 @@ function dmn_status($dmnpid,$istestnet) {
               echo "\nWARNING: ".$mn3output." - Unknown StatusEx: [".$mn3status."] ";
               $mn3status = "__UNKNOWN__";
             }
-            $mnlist2final[$mn3output."-".$dashdinfo['testnet']][$uname] = array('Status' => $active,
+            $mnlist2final[$mn3output."-".$pacdinfo['testnet']][$uname] = array('Status' => $active,
                                                                                     'StatusEx' => $mn3status);
           }
         }
@@ -1746,7 +1746,7 @@ function dmn_status($dmnpid,$istestnet) {
   $mncount = $mncountinactive+$mncountactive;
   if (count($mnlistfinal) > 0) {
     ksort($mnlistfinal,SORT_NATURAL);
-    $estpayoutdaily = round(dmn_getpayout($mncountactive,$dashdinfo['difficulty']),2);
+    $estpayoutdaily = round(dmn_getpayout($mncountactive,$pacdinfo['difficulty']),2);
   }
   else {
     $estpayoutdaily = '???';
@@ -2146,7 +2146,7 @@ function dmn_status($dmnpid,$istestnet) {
 $lastrefresh = gmdate('Y-m-d H:i:s');
 $starttime = microtime(true);
 
-xecho("Dash Ninja Control [dmnctl] v".DMN_VERSION." (".date('Y-m-d H:i:s',filemtime(__FILE__)).")\n");
+xecho("Pac Ninja Control [dmnctl] v".DMN_VERSION." (".date('Y-m-d H:i:s',filemtime(__FILE__)).")\n");
 
 if ($argc > 1) {
   $istestnet = 0;

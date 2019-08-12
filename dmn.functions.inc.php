@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/Liquid369/pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -53,20 +53,20 @@ function dmn_getpid($uname,$testnet = false) {
   else {
     $testinfo = '';
   }
-  if (file_exists("/root/.darkcoin$testinfo/darkcoind.pid") !== FALSE) {
-    $res = trim(file_get_contents("/root/.darkcoin$testinfo/darkcoind.pid"));
+  if (file_exists("/root/.paccoin$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.paccoin$testinfo/paccoind.pid"));
   }
-  else if (file_exists("/root/.dashcore$testinfo/paccoind.pid") !== FALSE) {
-    $res = trim(file_get_contents("/root/.dashcore$testinfo/paccoind.pid"));
+  else if (file_exists("/root/.paccore$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.paccore$testinfo/paccoind.pid"));
   }
-  else if (file_exists("/root/.dashcore$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents("/root/.dashcore$testinfo/dash.pid"));
+  else if (file_exists("/root/.paccore$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.paccore$testinfo/paccoind.pid"));
   }
-  else if (file_exists("/root/.dash$testinfo/paccoind.pid") !== FALSE) {
-    $res = trim(file_get_contents("/root/.dash$testinfo/paccoind.pid"));
+  else if (file_exists("/root/.paccoin$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.paccoin$testinfo/paccoind.pid"));
   }
-  else if (file_exists("/root/.dash$testinfo/dash.pid") !== FALSE) {
-    $res = trim(file_get_contents("/root/.dash$testinfo/dash.pid"));
+  else if (file_exists("/root/.paccoin$testinfo/paccoind.pid") !== FALSE) {
+    $res = trim(file_get_contents("/root/.paccoin$testinfo/paccoind.pid"));
   }
   else {
     $res = false;
@@ -90,7 +90,7 @@ function dmn_getuid($uname,&$gid) {
 
 }
 
-// Run Dash Ninja public webservice GET method command
+// Run Pac Ninja public webservice GET method command
 function dmn_api_get($command,$payload = array(),&$response) {
 
   global $argv;
@@ -101,8 +101,8 @@ function dmn_api_get($command,$payload = array(),&$response) {
 
   $ch = curl_init();
   curl_setopt( $ch, CURLOPT_USERAGENT, basename($argv[0])."/".DMN_VERSION );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-  curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+  //curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+  //curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
   curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
   curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
   curl_setopt( $ch, CURLOPT_MAXREDIRS, 0 );
@@ -125,7 +125,7 @@ function dmn_api_get($command,$payload = array(),&$response) {
 
 }
 
-// Run Dash Ninja webservice GET method command
+// Run Pac Ninja webservice GET method command
 function dmn_cmd_get($command,$payload = array(),&$response) {
 
   global $argv;
@@ -205,7 +205,7 @@ function dmn_cmd_post($command,$payload,&$response) {
 }
 
 // Get paccoind version from binary
-function dmn_dashdversion($dpath) {
+function dmn_pacdversion($dpath) {
 
   if (file_exists($dpath) || is_link($dpath)) {
     exec($dpath.' -?',$output,$retval);

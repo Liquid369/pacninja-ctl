@@ -1,14 +1,14 @@
-# Dash Ninja Control Scripts (dashninja-ctl)
+# Pac Ninja Control Scripts (dashninja-ctl)
 By Alexandre (aka elbereth) Devilliers
 
 Check the running live website at https://dashninja.pl
 
-This is part of what makes the Dash Ninja monitoring application.
+This is part of what makes the Pac Ninja monitoring application.
 It contains:
 * dash-node.php : is a php implementation of Dash protocol to retrieve subver during port checking
 * dashblocknotify : is the blocknotify script (for stats)
 * dashblockretrieve : is a script used to retrieve block information when blocknotify script did not work (for stats)
-* dashupdate : is an auto-update dashd script (uses git)
+* dashupdate : is an auto-update pacd script (uses git)
 * dmnbalance : is the balance check script (for stats)
 * dmnblockcomputeexpected : is a script used to compute and store the expected fields in cmd_info_blocks table
 * dmnblockdegapper : is a script that detects if blocks are missing in cmd_info_blocks table and retrieve them if needed
@@ -24,9 +24,9 @@ It contains:
 * dmnvotesrrd and dmnvotesrrdexport: are obsolete v11 votes storage and exported (for graphs)
 
 ## Requirement:
-* Dash Ninja Back-end: https://github.com/elbereth/dashninja-be
-* Dash Ninja Database: https://github.com/elbereth/dashninja-db
-* Dash Ninja Front-End: https://github.com/elbereth/dashninja-fe
+* Pac Ninja Back-end: https://github.com/elbereth/dashninja-be
+* Pac Ninja Database: https://github.com/elbereth/dashninja-db
+* Pac Ninja Front-End: https://github.com/elbereth/dashninja-fe
 * PHP 5.6 with curl
 
 Important: Almost all the scripts uses the private rest API to retrieve and submit data to the database (only dmnblockcomputeexpected uses direct MySQL access).
@@ -35,7 +35,7 @@ Important: Almost all the scripts uses the private rest API to retrieve and subm
 * Go to /opt
 * Get latest code from github:
 ```shell
-git clone https://github.com/elbereth/dashninja-ctl.git
+git clone https://github.com/Liquid369/pacninja-ctl.git
 ```
 * Get sub-modules:
 ```shell
@@ -46,7 +46,7 @@ git submodule update --init --recursive
 
 ## Configuration:
 * Copy dmn.config.inc.php.sample to dmn.config.inc.php and setup your installation.
-* Add dmncron to your crontab (every minute is what official Dash Ninja uses)
+* Add dmncron to your crontab (every minute is what official Pac Ninja uses)
 ```
 */1 * * * * /opt/dashninja-ctl/dmncron
 ```

@@ -118,14 +118,14 @@ else {
         }
         closedir($handle);
     }
-    $dashdpath = $tdir."/".$folder."/bin/Pacd";
-    if (($folder === FALSE) || (!file_exists($dashdpath))) {
+    $pacdpath = $tdir."/".$folder."/bin/Pacd";
+    if (($folder === FALSE) || (!file_exists($pacdpath))) {
         echo "ERROR (Could not extract correctly)\n";
         die3(5);
     }
-    echo "OK (".$dashdpath.")\n";
+    echo "OK (".$pacdpath.")\n";
     xecho("Retrieving version number: ");
-    exec($dashdpath." -?",$output,$ret);
+    exec($pacdpath." -?",$output,$ret);
     if ($ret != 0) {
         echo "ERROR (Pacd return code $ret)\n";
         die3(5);
@@ -137,7 +137,7 @@ else {
     $version = $match[1];
     echo "OK (".$version.")\n";
     xecho("Adding new version to database: ");
-    rename($dashdpath,"/opt/Pacd/0.12/Pacd-".$version);
+    rename($pacdpath,"/opt/Pacd/0.12/Pacd-".$version);
     exec("/opt/dmnctl/dmnctl version /opt/Pacd/0.12/Pacd-".$version." ".$version." 1 1",$output,$ret);
     var_dump($output);
     var_dump($ret);

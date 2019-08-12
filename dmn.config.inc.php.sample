@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/Liquid369/pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -36,8 +36,8 @@ DEFINE('DMN_PID_PREFIX','dmn');
 //  Regex for masternode usernames
 DEFINE('DMN_PID_REGEX',"/dmn(\d\d*)/");
 
-// Default path to dashd
-DEFINE('DMN_DASHD_DEFAULT','/usr/local/bin/dashd');
+// Default path to pacd
+DEFINE('DMN_DASHD_DEFAULT','/usr/local/bin/pacd');
 
 // How much to wait for start/stop before giving up (in seconds)
 DEFINE('DMN_STOPWAIT',10);
@@ -121,7 +121,7 @@ define('DMN_URL_API','https://yourdomain.tk/api');
 //  Private API end-point
 define('DMN_URL_CMD','https://cmd.yourdomain.tk');
 //  Private API SSL configuration (you need a CA, certificate and private key for this hub client)
-define('DMN_SSL_CAINFO','/usr/share/ca-certificates/yourdomain.tk/DashNinja_CA_Root.crt');
+define('DMN_SSL_CAINFO','/usr/share/ca-certificates/yourdomain.tk/PacNinja_CA_Root.crt');
 define('DMN_SSL_CERT','/etc/ssl/private/hub01.cmd.yourdomain.tk.crt');
 define('DMN_SSL_KEY','/etc/ssl/private/hub01.cmd.yourdomain.tk.key');
 //  Private API interface to use

@@ -1,21 +1,21 @@
 <?php
 
 /*
-    This file is part of Dash Ninja.
-    https://github.com/elbereth/dashninja-ctl
+    This file is part of Pac Ninja.
+    https://github.com/Liquid369/pacninja-ctl
 
-    Dash Ninja is free software: you can redistribute it and/or modify
+    Pac Ninja is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Dash Ninja is distributed in the hope that it will be useful,
+    Pac Ninja is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+    along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
@@ -26,7 +26,7 @@ if (!defined('DMN_SCRIPT') || !defined('DMN_CONFIG') || (DMN_SCRIPT !== true) ||
 define('DMN_VERSION','1.2.5');
 
 // Start the masternodes
-function dmn_start($uname,$conf,$dashd,$extra="") {
+function dmn_start($uname,$conf,$pacd,$extra="") {
 
   $testnet = ($conf->getconfig('testnet') == 1);
   $pid = dmn_getpid($uname,$testnet);
@@ -49,7 +49,7 @@ function dmn_start($uname,$conf,$dashd,$extra="") {
       $res = false;
       while ((!$res) && (!dmn_checkpid(dmn_getpid($uname,$testnet))) && ($trycount < 3)) {
         echo "T$trycount.";
-        exec("/sbin/start-stop-daemon -S -c $RUNASUID:$RUNASGID -N " . $nice . " -x /usr/bin/env MALLOC_ARENA_MAX=1 " . $dashd . " -u $RUNASUID -q -- -daemon $extra");
+        exec("/sbin/start-stop-daemon -S -c $RUNASUID:$RUNASGID -N " . $nice . " -x /usr/bin/env MALLOC_ARENA_MAX=1 " . $pacd . " -u $RUNASUID -q -- -daemon $extra");
         usleep(250000);
         $waitcount = 0;
         while ((!dmn_checkpid(dmn_getpid($uname, $testnet))) && ($waitcount < DMN_STOPWAIT)) {
@@ -120,8 +120,8 @@ function dmn_stop($uname,$conf) {
         if (file_exists('/home/'.$uname."/.darkcoin$testinfo/darkcoind.pid")) {
           unlink('/home/'.$uname."/.darkcoin$testinfo/darkcoind.pid");
         }
-        if (file_exists('/home/'.$uname."/.dash$testinfo/dashd.pid")) {
-          unlink('/home/'.$uname."/.dash$testinfo/dashd.pid");
+        if (file_exists('/home/'.$uname."/.dash$testinfo/pacd.pid")) {
+          unlink('/home/'.$uname."/.dash$testinfo/pacd.pid");
         }
         echo "OK (Killed) ";
         $res = true;
@@ -141,17 +141,17 @@ function dmn_stop($uname,$conf) {
 }
 
 if (($argc < 3) && ($argv > 5)) {
-  xecho("Usage: ".basename($argv[0])." uname (start|stop|restart) [dashd] [extra_params]\n");
+  xecho("Usage: ".basename($argv[0])." uname (start|stop|restart) [pacd] [extra_params]\n");
   die(1);
 }
 
 $uname = $argv[1];
 $command = $argv[2];
 if ($argc > 3) {
-  $dashd = $argv[3];
+  $pacd = $argv[3];
 }
 else {
-  $dashd = DMN_DASHD_DEFAULT;
+  $pacd = DMN_DASHD_DEFAULT;
 }
 if ($argc > 4) {
   $extra = $argv[4];
@@ -172,12 +172,12 @@ if (!$conf->isConfigLoaded()) {
 }
 
 if ($command == 'start') {
-  if (!is_executable($dashd)) {
-    xecho("Error ($dashd is not an executable file)\n");
+  if (!is_executable($pacd)) {
+    xecho("Error ($pacd is not an executable file)\n");
     die(8);
   }
   xecho("Starting $uname: ");
-  if (dmn_start($uname,$conf,$dashd,$extra)) {
+  if (dmn_start($uname,$conf,$pacd,$extra)) {
     echo "\n";
     die(0);
   }
@@ -198,13 +198,13 @@ elseif ($command == 'stop') {
   }
 }
 elseif ($command == 'restart') {
-  if (!is_executable($dashd)) {
-    xecho("Error ($dashd is not an executable file)\n");
+  if (!is_executable($pacd)) {
+    xecho("Error ($pacd is not an executable file)\n");
     die(8);
   }
   xecho("Restarting $uname: ");
   if (dmn_stop($uname,$conf)) {
-    if (dmn_start($uname,$conf,$dashd,$extra)) {
+    if (dmn_start($uname,$conf,$pacd,$extra)) {
      echo "\n";
      die(0);
     }

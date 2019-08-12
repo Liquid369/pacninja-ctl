@@ -1,20 +1,20 @@
 #!/bin/zsh
 #
-#   This file is part of Dash Ninja.
-#   https://github.com/elbereth/dashninja-ctl
+#   This file is part of Pac Ninja.
+#   https://github.com/Liquid369/pacninja-ctl
 #
-#   Dash Ninja is free software: you can redistribute it and/or modify
+#   Pac Ninja is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   Dash Ninja is distributed in the hope that it will be useful,
+#   Pac Ninja is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with Dash Ninja.  If not, see <http://www.gnu.org/licenses/>.
+#   along with Pac Ninja.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 # Disable logging by default
@@ -39,7 +39,7 @@ if [[ "$1" == "log" ]]; then
 fi
 
 # Sequentially run scripts
-#/opt/dmnctl/dashdupdate >> $updatelog
+#/opt/dmnctl/pacdupdate >> $updatelog
 /opt/pacninja-ctl/dmnctl status >> $statuslog
 #/opt/dmnctl/dmnvotesrrd >> $votesrrdlog
 /opt/pacninja-ctl/dmnblockparser >> $blockparserlog
